@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import com.kk.ui.dialog.R;
+import com.kk.dialog.R;
 import java.io.File;
 import java.util.List;
 
