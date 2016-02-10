@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import com.kk.dialog.R;
+
 import java.io.File;
 import java.util.List;
 
@@ -20,22 +20,19 @@ class FileAdapter extends ArrayAdapter<File> {
     protected Drawable fileIcon;
     protected int selectColor = 0xff0099cc;
     protected int normalColor = 0x00000000;
+    protected Context context;
     protected File selectFile;
-    protected FileSelectListener mListener;
 
     @SuppressWarnings("deprecation")
     public FileAdapter(Context context, List<File> files) {
         super(context, android.R.layout.simple_list_item_1, files);
+        this.context = context;
         if (Build.VERSION.SDK_INT >= 21) {
             folderIcon = context.getDrawable(R.drawable.ic_menu_archive);
         } else {
             folderIcon = context.getResources().getDrawable(R.drawable.ic_menu_archive);
         }
         fileIcon = null;
-    }
-
-    public void setListener(FileSelectListener listener) {
-        mListener = listener;
     }
 
     public void setHighHint(boolean isHighHint) {
@@ -54,44 +51,29 @@ class FileAdapter extends ArrayAdapter<File> {
         }
         view = (TextView) convertView;
         final File file = getItem(position);
-        if (position != 0)
+        if (position != 0) {
             view.setText(" " + file.getName());
-        else
-            view.setText(R.string.dialog_goback);
-        if (file.isDirectory()) {
-            setDrawable(view, folderIcon);
-            if (isHighHint) {
-                view.setBackgroundColor(normalColor);
-            }
-        } else {
-            //new SetDrawableTask(this, view).execute(file);
-            setDrawable(view, fileIcon);
-            if (isHighHint) {
-                if (TextUtils.equals(selectFile.getAbsolutePath(), file.getAbsolutePath())) {
-                    view.setBackgroundColor(selectColor);
-                } else {
+            if (file.isDirectory()) {
+                setDrawable(view, folderIcon);
+                if (isHighHint) {
                     view.setBackgroundColor(normalColor);
                 }
-            }
-        }
-        if (!isHighHint) {
-            view.setBackgroundColor(normalColor);
-        }
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position == 0) {
-                    if (mListener != null) {
-                        mListener.onGoBack(file);
-                    }
-                } else if (canSelect(file)) {
-                    selectFile = file;
-                    if (mListener != null) {
-                        mListener.OnSelectedFile(file);
+            } else {
+                //new SetDrawableTask(this, view).execute(file);
+                setDrawable(view, fileIcon);
+                if (isHighHint) {
+                    if (selectFile != null &&
+                            TextUtils.equals(selectFile.getAbsolutePath(), file.getAbsolutePath())) {
+                        view.setBackgroundColor(selectColor);
+                    } else {
+                        view.setBackgroundColor(normalColor);
                     }
                 }
             }
-        });
+        } else {
+            setDrawable(view, null);
+            view.setText(". . .");
+        }
         return view;
     }
 

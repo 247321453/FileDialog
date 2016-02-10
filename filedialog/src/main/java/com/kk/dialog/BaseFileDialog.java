@@ -8,9 +8,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,19 +27,30 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/1/29.
  */
-class BaseFileDialog extends AlertDialog implements FileSelectListener {
+class BaseFileDialog extends AlertDialog {
     protected TextView title;
     protected Context context;
     protected final DisplayMetrics metrics;
-    protected String mCurPath;
+    protected String mCurPath = getStoragePath();
     protected FileAdapter mFileAdapter;
     protected FileComparator mFileComparator;
     protected boolean isIniting = true;
+    static final float HEIGHT_P = 0.68f;
+
+    public static String getStoragePath() {
+        try {
+            String str = Environment.getExternalStorageDirectory().getAbsolutePath();
+            return str;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "/storage/emulated/legacy/";
+    }
 
     protected DialogFileFilter mDialogFileFilter;
 
     public BaseFileDialog(Context context) {
-        this(context, android.R.style.Theme_DeviceDefault_Light_Dialog_MinWidth);
+        this(context, R.style.BaseDialog_NoFrame);
     }
 
     public BaseFileDialog(Context context, int themeResId) {
@@ -61,8 +75,28 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
         getFileAdapter();
         LinearLayout linearLayout = createMainLayout(context);
         ListView listView = new ListView(context);
-        linearLayout.addView(listView);
+        linearLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                (int)(metrics.heightPixels * HEIGHT_P)));
         listView.setAdapter(mFileAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                File file = mFileAdapter.getItem(position);
+                if (position == 0) {
+                    onGoBack(file);
+                } else {
+                    if (file.isDirectory()) {
+                        onGoBack(file);
+                    } else {
+                        mFileAdapter.selectFile = file;
+                        mFileAdapter.notifyDataSetChanged();
+                        if (BuildConfig.DEBUG) {
+                            Log.i("dialog", "select " + file);
+                        }
+                    }
+                }
+            }
+        });
         setCustomTitle(title);
         setView(linearLayout);
     }
@@ -72,6 +106,12 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
             mFileAdapter = new FileAdapter(context, new ArrayList<File>());
         }
         return mFileAdapter;
+    }
+
+    @Override
+    public void show() {
+        updateFile(mCurPath);
+        super.show();
     }
 
     public void setDialogFileFilter(DialogFileFilter dialogFileFilter) {
@@ -104,9 +144,8 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
         return textView;
     }
 
-    @Override
     public void onGoBack(File curDir) {
-        mCurPath = curDir.getParentFile().getAbsolutePath();
+        mCurPath = curDir.getAbsolutePath();
         updateFile(mCurPath);
     }
 
@@ -122,12 +161,8 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
         mFileAdapter.setFileIcon(fileIcon);
     }
 
-    @Override
-    public void OnSelectedFile(File file) {
-        mFileAdapter.notifyDataSetChanged();
-    }
-
     protected void updateFile(String curPath) {
+        setCurPath(curPath);
         updateTitle();
         //刷新
         mFileAdapter.clear();
@@ -148,9 +183,6 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
 
     public void setCurPath(String curPath) {
         mCurPath = curPath;
-        if (!isIniting) {
-            updateFile(curPath);
-        }
     }
 
     public String getCurPath() {
@@ -160,7 +192,7 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
     public void updateTitle() {
         String titleText = mCurPath;
         int screenWidth = metrics.widthPixels;
-        int maxWidth = (int) (screenWidth * 0.8f);
+        int maxWidth = (int) (screenWidth * HEIGHT_P);
         if (getTextWidth(titleText, title.getPaint()) > maxWidth) {
             while (getTextWidth("..." + titleText, title.getPaint()) > maxWidth) {
                 int start = titleText.indexOf("/", 2);
@@ -178,7 +210,7 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
     protected LinearLayout createMainLayout(Context context) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setMinimumHeight(Math.round((float) metrics.heightPixels * 0.75f));
+        linearLayout.setMinimumHeight(Math.round((float) metrics.heightPixels * HEIGHT_P+0.1f));
         return linearLayout;
     }
 
@@ -196,8 +228,13 @@ class BaseFileDialog extends AlertDialog implements FileSelectListener {
         if (mDialogFileFilter == null) {
             mDialogFileFilter = new DialogFileFilter(null, false);
         }
-        fileList.addAll(Arrays.asList(directory.listFiles(mDialogFileFilter)));
+        File[] files = directory.listFiles(mDialogFileFilter);
+        if (files != null)
+            fileList.addAll(Arrays.asList(files));
         Collections.sort(fileList, mFileComparator);
+        if (BuildConfig.DEBUG) {
+            Log.i("dialog", "files " + (fileList.size() - 1));
+        }
         return fileList;
     }
 }

@@ -18,6 +18,11 @@ public class SaveFileDialog extends BaseFileDialog {
 
     public SaveFileDialog(Context context) {
         super(context);
+        setHighHint(true);
+    }
+
+    public SaveFileDialog(Context context, int themeResId) {
+        super(context, themeResId);
         setHighHint(false);
     }
 

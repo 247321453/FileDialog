@@ -28,7 +28,6 @@ public class DialogFileFilter implements FilenameFilter {
         if (onlyDir) {
             return file.isDirectory();
         }
-        if (file.isDirectory()) return false;
         if (isAll) return true;
         filename = filename.toLowerCase(Locale.US);
         for (String f : filters) {
