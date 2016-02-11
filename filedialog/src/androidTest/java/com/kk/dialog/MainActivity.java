@@ -40,9 +40,6 @@ public class MainActivity extends Activity{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     File file = fileDialog.getSelectFile();
-                    if(file==null){
-                        file=new File(fileDialog.getCurPath());
-                    }
                     Toast.makeText(MainActivity.this, ""+file, Toast.LENGTH_SHORT).show();
                 }
             });

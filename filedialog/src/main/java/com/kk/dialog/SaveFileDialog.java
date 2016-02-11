@@ -3,6 +3,7 @@ package com.kk.dialog;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -43,13 +44,25 @@ public class SaveFileDialog extends BaseFileDialog {
     }
 
     protected void createDir(File file) {
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
-        }
-        else if (!file.isDirectory()) {
+        } else if (!file.isDirectory()) {
             file.delete();
             file.mkdirs();
         }
+    }
+
+    @Override
+    public File getSelectFile() {
+        File file = super.getSelectFile();
+        if (file == null) {
+            if (!TextUtils.isEmpty(mEditText.getText())) {
+                return new File(mCurPath, "" + mEditText.getText());
+            }
+        }else{
+            return file;
+        }
+        return new File(mCurPath);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -70,6 +83,7 @@ public class SaveFileDialog extends BaseFileDialog {
                         .toString());
                 createDir(file);
                 updateFile(file.getAbsolutePath());
+                mEditText.setText("");
             }
         });
         return btn;
