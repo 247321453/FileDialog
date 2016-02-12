@@ -16,7 +16,7 @@ public class DialogFileFilter implements FilenameFilter {
     public DialogFileFilter(String filters, boolean onlyDir) {
         this.isAll = filters == null || filters.trim().length() == 0 || filters.equals("*") || filters.equals("*.*");
         if (!this.isAll) {
-            this.filters = filters.toLowerCase(Locale.US).split("|");
+            this.filters = filters.toLowerCase(Locale.US).split("\\|");
         }
         this.onlyDir = onlyDir;
     }
@@ -28,6 +28,8 @@ public class DialogFileFilter implements FilenameFilter {
         if (onlyDir) {
             return file.isDirectory();
         }
+        if(file.isDirectory())
+            return true;
         if (isAll) return true;
         filename = filename.toLowerCase(Locale.US);
         for (String f : filters) {
