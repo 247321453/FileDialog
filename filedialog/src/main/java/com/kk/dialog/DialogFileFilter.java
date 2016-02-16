@@ -8,27 +8,41 @@ public class DialogFileFilter implements FilenameFilter {
     protected String[] filters;
     protected boolean isAll;
     protected boolean onlyDir;
+    protected boolean showHide;
 
     /***
      * @param filters 后缀格式
      * @param onlyDir 仅文件夹
      */
     public DialogFileFilter(String filters, boolean onlyDir) {
+        this(filters, onlyDir, false);
+    }
+
+    /***
+     * @param filters  后缀格式
+     * @param onlyDir  仅文件夹
+     * @param showHide 显示隐藏文件
+     */
+    public DialogFileFilter(String filters, boolean onlyDir, boolean showHide) {
         this.isAll = filters == null || filters.trim().length() == 0 || filters.equals("*") || filters.equals("*.*");
         if (!this.isAll) {
             this.filters = filters.toLowerCase(Locale.US).split("\\|");
         }
         this.onlyDir = onlyDir;
+        this.showHide = showHide;
     }
 
     @Override
     public boolean accept(File dir, String filename) {
         if (filename == null) return false;
+        if (!showHide) {
+            if (filename.startsWith(".")) return false;
+        }
         File file = new File(dir, filename);
         if (onlyDir) {
             return file.isDirectory();
         }
-        if(file.isDirectory())
+        if (file.isDirectory())
             return true;
         if (isAll) return true;
         filename = filename.toLowerCase(Locale.US);
