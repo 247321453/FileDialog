@@ -14,8 +14,8 @@ public class DialogFileFilter implements FilenameFilter {
      * @param filters 后缀格式
      * @param onlyDir 仅文件夹
      */
-    public DialogFileFilter(String filters, boolean onlyDir) {
-        this(filters, onlyDir, false);
+    public DialogFileFilter(boolean onlyDir, String... filters) {
+        this(onlyDir, false, filters);
     }
 
     /***
@@ -23,10 +23,10 @@ public class DialogFileFilter implements FilenameFilter {
      * @param onlyDir  仅文件夹
      * @param showHide 显示隐藏文件
      */
-    public DialogFileFilter(String filters, boolean onlyDir, boolean showHide) {
-        this.isAll = filters == null || filters.trim().length() == 0 || filters.equals("*") || filters.equals("*.*");
+    public DialogFileFilter(boolean onlyDir, boolean showHide, String... filters) {
+        this.isAll = (filters == null || filters.length == 0);
         if (!this.isAll) {
-            this.filters = filters.toLowerCase(Locale.US).split("\\|");
+            this.filters = filters;
         }
         this.onlyDir = onlyDir;
         this.showHide = showHide;

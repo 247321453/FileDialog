@@ -6,7 +6,7 @@ def libName = 'filedialog'
 def siteUrl = 'https://github.com/247321453/FileDialog'
 def gitUrl = 'https://github.com/247321453/FileDialog.git'
 group = "com.github.247321453"
-version = '1.2.4'
+version = '1.2.5'
 
 android {
     compileSdkVersion 23

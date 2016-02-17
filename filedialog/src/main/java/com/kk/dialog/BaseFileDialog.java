@@ -226,7 +226,7 @@ class BaseFileDialog extends AlertDialog {
         if (directory.getParentFile() != null)
             fileList.add(directory.getParentFile());
         if (mDialogFileFilter == null) {
-            mDialogFileFilter = new DialogFileFilter(null, false);
+            mDialogFileFilter = new DialogFileFilter(false);
         }
         File[] files = directory.listFiles(mDialogFileFilter);
         if (files != null)
