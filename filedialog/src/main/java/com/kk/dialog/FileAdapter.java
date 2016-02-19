@@ -45,11 +45,15 @@ class FileAdapter extends ArrayAdapter<File> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        TextView view = null;
+        TextView view;
         if (convertView == null) {
             convertView = super.getView(position, convertView, parent);
+            view = (TextView) convertView;
+            view.setSingleLine();
+            view.setEllipsize(TextUtils.TruncateAt.END);
+        }else{
+            view = (TextView) convertView;
         }
-        view = (TextView) convertView;
         final File file = getItem(position);
         if (position != 0) {
             view.setText(" " + file.getName());
