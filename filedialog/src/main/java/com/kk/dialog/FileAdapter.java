@@ -51,35 +51,31 @@ class FileAdapter extends ArrayAdapter<File> {
             view = (TextView) convertView;
             view.setSingleLine();
             view.setEllipsize(TextUtils.TruncateAt.END);
-        }else{
+        } else {
             view = (TextView) convertView;
         }
         final File file = getItem(position);
-        if (position != 0) {
-            view.setText(" " + file.getName());
-            if (file.isDirectory()) {
-                setDrawable(view, folderIcon);
-                if (isHighHint) {
-                    view.setBackgroundColor(normalColor);
-                }
-            } else {
-                //new SetDrawableTask(this, view).execute(file);
-                setDrawable(view, fileIcon);
-                if (isHighHint) {
-                    if (selectFile != null &&
-                            TextUtils.equals(selectFile.getAbsolutePath(), file.getAbsolutePath())) {
-                        view.setBackgroundColor(selectColor);
-                    } else {
-                        view.setBackgroundColor(normalColor);
-                    }
-                }
+        view.setText(" " + file.getName());
+        if (file.isDirectory()) {
+            setDrawable(view, folderIcon);
+            if (isHighHint) {
+                view.setBackgroundColor(normalColor);
             }
         } else {
-            setDrawable(view, null);
-            view.setText(". . .");
+            //new SetDrawableTask(this, view).execute(file);
+            setDrawable(view, fileIcon);
+            if (isHighHint) {
+                if (selectFile != null &&
+                        TextUtils.equals(selectFile.getAbsolutePath(), file.getAbsolutePath())) {
+                    view.setBackgroundColor(selectColor);
+                } else {
+                    view.setBackgroundColor(normalColor);
+                }
+            }
         }
         return view;
     }
+
 
     protected void setDrawable(TextView view, Drawable drawable) {
         setDrawable(view, drawable, 60);

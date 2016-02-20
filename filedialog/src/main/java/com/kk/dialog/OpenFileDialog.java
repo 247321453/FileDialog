@@ -9,6 +9,7 @@ public class OpenFileDialog extends BaseFileDialog {
 
     public OpenFileDialog(Context context) {
         super(context);
+        title = context.getString(R.string.open_file);
         setHighHint(true);
     }
 

@@ -28,10 +28,12 @@ import java.util.List;
  * Created by Administrator on 2016/1/29.
  */
 class BaseFileDialog extends AlertDialog {
-    protected TextView title;
+    protected String title;
+    protected TextView curPathView;
     protected Context context;
     protected final DisplayMetrics metrics;
     protected String mCurPath = getStoragePath();
+    protected String parentPath;
     protected FileAdapter mFileAdapter;
     protected FileComparator mFileComparator;
     protected boolean isIniting = true;
@@ -59,6 +61,7 @@ class BaseFileDialog extends AlertDialog {
         mFileComparator = new FileComparator();
         metrics = context.getResources().getDisplayMetrics();
         mCurPath = Environment.getExternalStorageDirectory().getPath();
+        title = context.getString(R.string.open_file);
         initView();
         isIniting = false;
     }
@@ -70,34 +73,45 @@ class BaseFileDialog extends AlertDialog {
     }
 
     protected void initView() {
-        title = createTitle();
+        setTitle(title);
+        curPathView = createTitle();
+        curPathView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onGoBack(new File(parentPath == null ? mCurPath : parentPath));
+            }
+        });
         updateTitle();
         getFileAdapter();
         LinearLayout linearLayout = createMainLayout(context);
         ListView listView = new ListView(context);
+        linearLayout.addView(curPathView);
+        View view=new View(context);
+        view.setBackgroundColor(curPathView.getCurrentTextColor());
+        linearLayout.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int)dp2px(1)));
         linearLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                (int)(metrics.heightPixels * HEIGHT_P)));
+                (int) (metrics.heightPixels * HEIGHT_P)));
         listView.setAdapter(mFileAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 File file = mFileAdapter.getItem(position);
-                if (position == 0) {
+//                if (position == 0) {
+//                    onGoBack(file);
+//                } else {
+                if (file.isDirectory()) {
                     onGoBack(file);
                 } else {
-                    if (file.isDirectory()) {
-                        onGoBack(file);
-                    } else {
-                        mFileAdapter.selectFile = file;
-                        mFileAdapter.notifyDataSetChanged();
-                        if (BuildConfig.DEBUG) {
-                            Log.i("dialog", "select " + file);
-                        }
+                    mFileAdapter.selectFile = file;
+                    mFileAdapter.notifyDataSetChanged();
+                    if (BuildConfig.DEBUG) {
+                        Log.i("dialog", "select " + file);
                     }
                 }
+//                }
             }
         });
-        setCustomTitle(title);
+
         setView(linearLayout);
     }
 
@@ -193,24 +207,24 @@ class BaseFileDialog extends AlertDialog {
         String titleText = mCurPath;
         int screenWidth = metrics.widthPixels;
         int maxWidth = (int) (screenWidth * HEIGHT_P);
-        if (getTextWidth(titleText, title.getPaint()) > maxWidth) {
-            while (getTextWidth("..." + titleText, title.getPaint()) > maxWidth) {
+        if (getTextWidth(titleText, curPathView.getPaint()) > maxWidth) {
+            while (getTextWidth("..." + titleText, curPathView.getPaint()) > maxWidth) {
                 int start = titleText.indexOf("/", 2);
                 if (start > 0)
                     titleText = titleText.substring(start);
                 else
                     titleText = titleText.substring(2);
             }
-            title.setText("..." + titleText);
+            curPathView.setText("..." + titleText);
         } else {
-            title.setText(titleText);
+            curPathView.setText(titleText);
         }
     }
 
     protected LinearLayout createMainLayout(Context context) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setMinimumHeight(Math.round((float) metrics.heightPixels * HEIGHT_P+0.1f));
+        linearLayout.setMinimumHeight(Math.round((float) metrics.heightPixels * HEIGHT_P + 0.1f));
         return linearLayout;
     }
 
@@ -223,8 +237,10 @@ class BaseFileDialog extends AlertDialog {
     protected List<File> getFiles(String directoryPath) {
         File directory = new File(directoryPath);
         List<File> fileList = new ArrayList<File>();
-        if (directory.getParentFile() != null)
-            fileList.add(directory.getParentFile());
+        if (directory.getParentFile() != null) {
+            parentPath = directory.getParent();
+//            fileList.add(directory.getParentFile());
+        }
         if (mDialogFileFilter == null) {
             mDialogFileFilter = new DialogFileFilter(false);
         }

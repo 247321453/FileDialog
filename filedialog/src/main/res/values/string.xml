@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="create_folder">Craete Folder</string>
+    <string name="open_file">Open file</string>
+    <string name="save_file">Save file</string>
 </resources>
