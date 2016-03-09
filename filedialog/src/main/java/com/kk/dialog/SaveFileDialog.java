@@ -16,10 +16,26 @@ import java.io.File;
 public class SaveFileDialog extends BaseFileDialog {
     private EditText mEditText;
     private Button mNewBtn;
+    private boolean mHideCreateButton = false;
 
     public SaveFileDialog(Context context) {
         super(context);
         setHighHint(true);
+    }
+
+    public boolean isHideCreateButton() {
+        return mHideCreateButton;
+    }
+
+    public void setHideCreateButton(boolean hideCreateButton) {
+        mHideCreateButton = hideCreateButton;
+        if(mEditText!=null){
+            if(hideCreateButton){
+                mNewBtn.setVisibility(View.GONE);
+            }else{
+                mNewBtn.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     public SaveFileDialog(Context context, int themeResId) {
@@ -37,6 +53,9 @@ public class SaveFileDialog extends BaseFileDialog {
                 LayoutParams.MATCH_PARENT, 1));
         mEditText.setGravity(Gravity.CENTER_VERTICAL);
         mNewBtn = addDirButton(context);
+        if(mHideCreateButton){
+            mNewBtn.setVisibility(View.GONE);
+        }
         tmplayout.addView(mEditText);
         tmplayout.addView(mNewBtn);
         linearLayout.addView(tmplayout);
@@ -52,6 +71,7 @@ public class SaveFileDialog extends BaseFileDialog {
         }
     }
 
+
     @Override
     public File getSelectFile() {
         File file = super.getSelectFile();
@@ -59,7 +79,7 @@ public class SaveFileDialog extends BaseFileDialog {
             if (!TextUtils.isEmpty(mEditText.getText())) {
                 return new File(mCurPath, "" + mEditText.getText());
             }
-        }else{
+        } else {
             return file;
         }
         return new File(mCurPath);

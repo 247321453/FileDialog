@@ -59,5 +59,25 @@ public class MainActivity extends Activity {
             }
         });
         linearLayout.addView(button2);
+        Button button3=new Button(this);
+        button3.setText("save 2");
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final SaveFileDialog fileDialog = new SaveFileDialog(MainActivity.this);
+                fileDialog.setDialogFileFilter(new DialogFileFilter(false));
+                fileDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        File file = fileDialog.getSelectFile();
+                        Toast.makeText(MainActivity.this, "" + file, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                fileDialog.setHideCreateButton(true);
+                fileDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.cancel), (DialogInterface.OnClickListener) null);
+                fileDialog.show();
+            }
+        });
+        linearLayout.addView(button3);
     }
 }
