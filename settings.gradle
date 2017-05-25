@@ -1,1 +1,1 @@
-include ':filedialog'
+include ':filedialog', ':demo'
