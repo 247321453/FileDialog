@@ -26,9 +26,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
     }
 
     public interface FileChooseListener {
-        void onChoose(DialogInterface dialog, File file);
-
-        void onChooseNothing(DialogInterface dialog);
+        void onChoose(DialogInterface dlg, File file);
     }
 
     private final Mode mMode;
@@ -36,6 +34,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
     private FileFilter2 mFileFilter;
     private TextView mPathView;
     private boolean noNeedClose = false;
+    private EditText mEditText;
     private FileChooseListener mFileChooseListener;
 
     public FileDialog(Context context, Mode mode) {
@@ -60,7 +59,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         setTitle(R.string.file_default_title);
         setCancelable(false);
         setCanceledOnTouchOutside(false);
-        final EditText mEditText = (EditText) view.findViewById(R.id.edt_new_folder);
+        mEditText = (EditText) view.findViewById(R.id.edt_new_folder);
         setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(android.R.string.cancel), new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -100,13 +99,17 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
                     } else if (mFileAdapter.getChoose() != null) {
                         mFileChooseListener.onChoose(dialog, mFileAdapter.getChoose());
                     } else {
-                        mFileChooseListener.onChooseNothing(dialog);
+                        mFileChooseListener.onChoose(dialog, null);
                     }
                 } else {
                     dialog.dismiss();
                 }
             }
         });
+    }
+
+    public void setInputText(String text) {
+        mEditText.setText(text);
     }
 
     public void setFileChooseListener(FileChooseListener fileChooseListener) {
@@ -117,7 +120,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         if (dir == null) {
             return;
         }
-        mFileFilter = fileFilter == null ? FileFilter2.DEBUFALT: fileFilter;
+        mFileFilter = fileFilter == null ? FileFilter2.DEBUFALT : fileFilter;
         setDir(dir);
     }
 

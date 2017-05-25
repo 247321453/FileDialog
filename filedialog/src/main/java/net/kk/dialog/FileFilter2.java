@@ -18,8 +18,18 @@ public class FileFilter2 implements FileFilter {
      * @param exs 文件后缀
      */
     public FileFilter2(boolean showHide, String... exs) {
+        this(false, true, showHide, exs);
+    }
+
+    public FileFilter2(boolean onlyDir, boolean showHide) {
+        this(onlyDir, true, showHide);
+    }
+
+    public FileFilter2(boolean onlyDir, boolean ignoreCase, boolean showHide, String... ex) {
+        this.onlyDir = onlyDir;
+        this.ignoreCase = ignoreCase;
         this.showHide = showHide;
-        mEx = exs;
+        mEx = ex;
     }
 
     public void setOnlyDir(boolean onlyDir) {
@@ -38,9 +48,11 @@ public class FileFilter2 implements FileFilter {
         String name = pathname.getName();
         if (!showHide) {
             if (name.startsWith(".")) {
-                Log.d("kk", "name=" + name);
                 return false;
             }
+        }
+        if(pathname.isDirectory()){
+            return true;
         }
         if (ignoreCase) {
             name = name.toLowerCase(Locale.US);
@@ -51,7 +63,7 @@ public class FileFilter2 implements FileFilter {
                     return true;
                 }
             }
-        }else{
+        } else {
             return true;
         }
         return false;

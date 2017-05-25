@@ -64,11 +64,11 @@ public class MainActivity extends AppCompatActivity implements FileDialog.FileCh
 
     @Override
     public void onChoose(DialogInterface dialog, File file) {
-        Toast.makeText(this, "choose " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onChooseNothing(DialogInterface dialog) {
-        Toast.makeText(this, "choose nothing", Toast.LENGTH_SHORT).show();
+		if(file == null){
+			Toast.makeText(this, "choose nothing", Toast.LENGTH_SHORT).show();
+		}else{
+			Toast.makeText(this, "choose " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+		}
+        
     }
 }
