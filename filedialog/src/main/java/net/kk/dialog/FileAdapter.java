@@ -66,7 +66,7 @@ class FileAdapter extends BaseAdapter {
         return mChoose;
     }
 
-    public boolean setFiles(File dir, boolean onlyDir, File[] files) {
+    public boolean setFiles(File dir, File[] files) {
         if (mRoot != null && dir != null
                 && mRoot.getAbsolutePath().length() > dir.getAbsolutePath().length()) {
             return false;
@@ -76,9 +76,6 @@ class FileAdapter extends BaseAdapter {
         mFileList.clear();
         if (files != null) {
             for (File file : files) {
-                if (onlyDir && !file.isDirectory()) {
-                    continue;
-                }
                 mFileList.add(file);
             }
             Collections.sort(mFileList, new FileComparator());

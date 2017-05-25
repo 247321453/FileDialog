@@ -33,7 +33,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
 
     private final Mode mMode;
     private final FileAdapter mFileAdapter;
-    private FileFilter mFileFilter;
+    private FileFilter2 mFileFilter;
     private TextView mPathView;
     private boolean noNeedClose = false;
     private FileChooseListener mFileChooseListener;
@@ -113,20 +113,20 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         mFileChooseListener = fileChooseListener;
     }
 
-    public void setPath(File dir, FileFilter fileFilter) {
+    public void setPath(File dir, FileFilter2 fileFilter) {
         if (dir == null) {
             return;
         }
-        mFileFilter = fileFilter;
+        mFileFilter = fileFilter == null ? FileFilter2.DEBUFALT: fileFilter;
         setDir(dir);
     }
 
-    private void setDir(File dir){
+    private void setDir(File dir) {
         boolean rs;
         if (dir.isDirectory()) {
-            rs = mFileAdapter.setFiles(dir, mMode == Mode.ChooseDirectory, dir.listFiles(mFileFilter));
+            rs = mFileAdapter.setFiles(dir, dir.listFiles(mFileFilter));
         } else {
-            rs = mFileAdapter.setFiles(dir.getParentFile(), mMode == Mode.ChooseDirectory, null);
+            rs = mFileAdapter.setFiles(dir.getParentFile(), null);
         }
         if (rs) {
             mPathView.setText(dir.getAbsolutePath());
@@ -141,7 +141,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         if (file != null) {
             if (file.isDirectory()) {
                 setPath(file, mFileFilter);
-            } else{
+            } else {
                 if (mMode != Mode.ChooseDirectory) {
                     mFileAdapter.setChoose(file);
                     mFileAdapter.notifyDataSetChanged();
