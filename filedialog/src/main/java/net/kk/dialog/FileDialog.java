@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -140,9 +141,10 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         if (file != null) {
             if (file.isDirectory()) {
                 setPath(file, mFileFilter);
-            } else if (mFileChooseListener != null) {
+            } else{
                 if (mMode != Mode.ChooseDirectory) {
                     mFileAdapter.setChoose(file);
+                    mFileAdapter.notifyDataSetChanged();
                 }
             }
         }

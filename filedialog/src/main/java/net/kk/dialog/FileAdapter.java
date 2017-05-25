@@ -1,7 +1,10 @@
 package net.kk.dialog;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +48,11 @@ class FileAdapter extends BaseAdapter {
     }
 
     public void setChoose(File choose) {
-        mChoose = choose;
+        if (mChoose != null && mChoose.equals(choose)) {
+            mChoose = null;
+        } else {
+            mChoose = choose;
+        }
     }
 
     /***
@@ -59,16 +66,17 @@ class FileAdapter extends BaseAdapter {
         return mChoose;
     }
 
-    public boolean setFiles(File dir,boolean onlyDir, File[] files) {
+    public boolean setFiles(File dir, boolean onlyDir, File[] files) {
         if (mRoot != null && dir != null
                 && mRoot.getAbsolutePath().length() > dir.getAbsolutePath().length()) {
             return false;
         }
         this.mDir = dir;
+        mChoose = null;
         mFileList.clear();
         if (files != null) {
             for (File file : files) {
-                if(onlyDir && !file.isDirectory()){
+                if (onlyDir && !file.isDirectory()) {
                     continue;
                 }
                 mFileList.add(file);
@@ -119,16 +127,16 @@ class FileAdapter extends BaseAdapter {
             mIImagerDisplay.bind(file, viewHolder.icon);
             viewHolder.text.setText(file.getName());
         }
-        if(mChoose !=null&&mChoose.equals(file)){
-            convertView.setSelected(true);
-        }else{
-            convertView.setSelected(false);
+        if (mChoose != null && TextUtils.equals(mChoose.getAbsolutePath(), file.getAbsolutePath())) {
+            convertView.setBackgroundColor(convertView.getResources().getColor(R.color.file_choose_color));
+        } else {
+            convertView.setBackgroundColor(Color.TRANSPARENT);
         }
         return convertView;
     }
 
     private class ViewHolder {
-        public ViewHolder(View view) {
+        private ViewHolder(View view) {
             this.icon = (ImageView) view.findViewById(R.id.file_item_icon);
             this.text = (TextView) view.findViewById(R.id.file_item_text);
 //            this.check = (CheckBox) view.findViewById(R.id.file_item_check);
