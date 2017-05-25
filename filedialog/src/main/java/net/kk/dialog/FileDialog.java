@@ -36,9 +36,14 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
     private boolean noNeedClose = false;
     private EditText mEditText;
     private FileChooseListener mFileChooseListener;
+    private static IImagerDisplay mDefault = new DefaultImagerDisplay();
+
+    public static void setImagerDisplayDefault(IImagerDisplay mDefault) {
+        FileDialog.mDefault = mDefault;
+    }
 
     public FileDialog(Context context, Mode mode) {
-        this(context, mode, new DefaultImagerDisplay());
+        this(context, mode, mDefault);
     }
 
     public FileDialog(Context context, Mode mode, IImagerDisplay iImagerDisplay) {
@@ -55,7 +60,7 @@ public class FileDialog extends AlertDialog implements ListView.OnItemClickListe
         listView.setAdapter(mFileAdapter);
         listView.setOnItemClickListener(this);
         mPathView = (TextView) view.findViewById(R.id.file_path);
-        view.setMinimumHeight((int) (Resources.getSystem().getDisplayMetrics().heightPixels * 0.8f));
+        view.setMinimumHeight((int) (Resources.getSystem().getDisplayMetrics().heightPixels * 0.75f));
         setTitle(R.string.file_default_title);
         setCancelable(false);
         setCanceledOnTouchOutside(false);
